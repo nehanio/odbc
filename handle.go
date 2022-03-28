@@ -7,7 +7,7 @@ package odbc
 import (
 	"fmt"
 
-	"github.com/taoikaihatsu-dev/odbc/api"
+	"github.com/nehanio/odbc/api"
 )
 
 func ToHandleAndType(handle interface{}) (h api.SQLHANDLE, ht api.SQLSMALLINT, err error) {
