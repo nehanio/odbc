@@ -269,7 +269,7 @@ type BindableColumn struct {
 func NewBindableColumn(b *BaseColumn, ctype api.SQLSMALLINT, bufSize int) *BindableColumn {
 	b.CType = ctype
 	c := &BindableColumn{BaseColumn: b, Size: bufSize}
-	l := 8 // always use small starting buffer
+	l := 256 // always use small starting buffer
 	if c.Size > l {
 		l = c.Size
 	}
@@ -322,7 +322,11 @@ func (c *BindableColumn) Value(h api.SQLHSTMT, idx int) (driver.Value, error) {
 	if !c.IsVariableWidth && int(c.Len) != c.Size {
 		return nil, fmt.Errorf("wrong column #%d length %d returned, %d expected", idx, c.Len, c.Size)
 	}
-	return c.BaseColumn.Value(c.Buffer[:c.Len])
+	if len(c.Buffer) < int(c.Len) {
+		return c.BaseColumn.Value(c.Buffer)
+	} else {
+		return c.BaseColumn.Value(c.Buffer[:c.Len])
+	}
 }
 
 // NonBindableColumn provide access to columns, that can't be bound.
